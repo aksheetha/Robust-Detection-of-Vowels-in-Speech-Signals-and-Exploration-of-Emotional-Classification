@@ -1,0 +1,491 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html xmlns:mwsh="http://www.mathworks.com/namespace/mcode/v1/syntaxhighlight.dtd">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <!--
+This HTML is auto-generated from an M-file.
+To make changes, update the M-file and republish this document.
+      -->
+      <title>readme</title>
+      <meta name="generator" content="MATLAB 7.6">
+      <meta name="date" content="2011-08-01">
+      <meta name="m-file" content="readme"><style>
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head>
+   <body>
+      <div class="content">
+         <h2>Contents</h2>
+         <div>
+            <ul>
+               <li><a href="#2">ICS DEMO</a></li>
+               <li><a href="#3">COMPETING-TALKER DEMO</a></li>
+               <li><a href="#4">CONSTRAINT RULE</a></li>
+               <li><a href="#5">REVERBERATION RULE</a></li>
+               <li><a href="#6">MASKER BASED RULE</a></li>
+               <li><a href="#7">REFERENCES</a></li>
+            </ul>
+         </div><pre class="codeinput"><span class="comment">% Present folder contains implementations of ideal channel selection (ICS)</span>
+<span class="comment">% algorithms based on different selection criteria (as presented at CIAP'11</span>
+<span class="comment">% conference). For the SNR selection criterion, ICS is also known in the</span>
+<span class="comment">% literature as ideal binary mask (see review in book by Wang and Brown,</span>
+<span class="comment">% 2006). References for the other selection criteria are provided at the</span>
+<span class="comment">% end of this file, and are available from our website:</span>
+<span class="comment">%</span>
+<span class="comment">% Direct any inquiries about the code to: Philip Loizou (loizou@utdallas.edu)</span>
+<span class="comment">% =============================================================================</span>
+</pre><h2>ICS DEMO<a name="2"></a></h2><pre class="codeinput"><span class="comment">% Usage: ics(noisefile, clfile, outfile, nsnr, thrd)</span>
+<span class="comment">%</span>
+<span class="comment">% noisefile - name of masker file</span>
+<span class="comment">% clfile - name of clean stimulus file</span>
+<span class="comment">% outfile - name of output file</span>
+<span class="comment">% nsnr is the overall input SNR (in dB) for noisy file</span>
+<span class="comment">% thrd is the SNR threshold  (in dB)</span>
+
+
+<span class="comment">% Example:</span>
+<span class="comment">% In MATLAB, type:</span>
+<span class="comment">%   &gt;&gt; ics('babble1.wav','S_01_01.wav','out.wav',-10,-5)</span>
+
+ics(<span class="string">'babble1.wav'</span>,<span class="string">'S_01_01.wav'</span>,<span class="string">'out.wav'</span>,-10,-5)
+
+<span class="comment">% For the above example, input SNR=-10 dB and SNR threshold=-5 dB.</span>
+<span class="comment">% The noisy (mixture) file is contained in 'S_01_01-noisy.wav' file.</span>
+<span class="comment">% Segregated file is in 'out.wav'</span>
+
+<span class="comment">% The wav files can be played via a Media Player, Cool Edit, Audition, etc.</span>
+<span class="comment">% It can also be viewed and played through our toolbox 'Colea':</span>
+<span class="comment">% http://www.utdallas.edu/~loizou/speech/software.htm</span>
+
+<span class="comment">% Reference:</span>
+<span class="comment">% Li, N. and Loizou, P. (2008). "Factors influencing intelligibility of ideal binary-masked speech: Implications</span>
+<span class="comment">% for noise reduction," Journal of Acoustical Society of America, 123(3), 1673-1682</span>
+
+
+</pre><h2>COMPETING-TALKER DEMO<a name="3"></a></h2><pre class="codeinput"><span class="comment">% Usage: ics_competing_talker(filename, clfile, t_outfile, m_outfile,thrd)</span>
+<span class="comment">%</span>
+<span class="comment">% filename - mixture filename</span>
+<span class="comment">% clfile - clean target filename</span>
+<span class="comment">% t_outfile - output file: Target talker</span>
+<span class="comment">% m_outfile - output file: Competing talker</span>
+<span class="comment">% thrd - SNR threshold in dB</span>
+
+<span class="comment">% Example:</span>
+<span class="comment">%   &gt;&gt; ics_competing_talker('talker_mixture.wav', 'S_01_10.wav','target.wav','masker.wav',-5)</span>
+
+ics_competing_talker(<span class="string">'talker_mixture.wav'</span>,<span class="string">'S_01_10.wav'</span>,<span class="string">'target.wav'</span>,<span class="string">'masker.wav'</span>,-5)
+
+<span class="comment">% In 'talker_mixture.wav' mixture file, the competing talker was added</span>
+<span class="comment">% at SNR=-5 dB (target and competing talkers were same for this example).</span>
+<span class="comment">% Files 'target.wav' and 'masker.wav' contain processed sentences</span>
+<span class="comment">% of the segregated target and competing-talker talkers respectively.</span>
+<span class="comment">% SNR threshold=-5 dB.</span>
+</pre><h2>CONSTRAINT RULE<a name="4"></a></h2><pre class="codeinput"><span class="comment">% Usage: ics_constr_rule(filename, clfile, outfile, GAIN)</span>
+<span class="comment">%</span>
+<span class="comment">% filename - noisy speech filename (mixture)</span>
+<span class="comment">% clfile - clean speech filename</span>
+<span class="comment">% outilfe - name of output file</span>
+<span class="comment">% GAIN='Wiener'; 'MMSE', 'logMMSE', 'MMSE-SPU'; 'pMMSE'; 'SpecSub'</span>
+<span class="comment">%</span>
+<span class="comment">% Example:</span>
+<span class="comment">%   &gt;&gt; ics_constr_rule('S_01_02-babble_m10dB.wav', 'S_01_02.wav','out_constr.wav','Wiener')</span>
+
+ics_constr_rule(<span class="string">'S_01_02-babble_m10dB.wav'</span>, <span class="string">'S_01_02.wav'</span>,<span class="string">'out_constr.wav'</span>,<span class="string">'Wiener'</span>)
+
+<span class="comment">% Target was corrupted with babble at -10 dB SNR.</span>
+<span class="comment">% The Wiener gain function was used.</span>
+<span class="comment">% Other possible gain functions: 'MMSE', 'logMMSE', 'MMSE-SPU', 'pMMSE', 'SpecSub'</span>
+
+<span class="comment">% Example with competing-talker:</span>
+<span class="comment">%   &gt;&gt; ics_constr_rule('talker_mixture.wav','S_01_10.wav','out.wav','Wiener')</span>
+
+ics_constr_rule(<span class="string">'talker_mixture.wav'</span>,<span class="string">'S_01_10.wav'</span>,<span class="string">'out.wav'</span>,<span class="string">'Wiener'</span>)
+
+<span class="comment">% Another example in babble at input SNR=-5 dB</span>
+<span class="comment">%   &gt;&gt; ics_constr_rule('S_02_02-babble_m5dB.wav', 'S_02_02.wav','out_constr.wav','Wiener')</span>
+
+ics_constr_rule(<span class="string">'S_02_02-babble_m5dB.wav'</span>, <span class="string">'S_02_02.wav'</span>,<span class="string">'out_constr.wav'</span>,<span class="string">'Wiener'</span>)
+
+<span class="comment">%References</span>
+<span class="comment">%Kim, G. and Loizou, P. (2011). &#8220;Gain-induced speech distortions and the absence of intelligibility</span>
+<span class="comment">%  benefit with existing noise-reduction algorithms,&#8221; J. Acoust. Soc. Am. 130(3), (in press)</span>
+<span class="comment">%Loizou, P.  and Kim, G. (2011). "Reasons why Current Speech-Enhancement Algorithms do not Improve Speech</span>
+<span class="comment">% Intelligibility and Suggested Solutions," IEEE Trans. Audio, Speech, Language Processing, 19(1), 47-56.</span>
+</pre><h2>REVERBERATION RULE<a name="5"></a></h2><pre class="codeinput"><span class="comment">% Usage:  ics_reverb(reverbfile, clfile, outfile, thrd)</span>
+<span class="comment">%</span>
+<span class="comment">% reverbfile - name of  file containing reverberated stimulus</span>
+<span class="comment">% clfile - name of clean sentence file</span>
+<span class="comment">% outfile - name of output (processed) file</span>
+<span class="comment">% thrd is the threshold (in dB) for signal-to-reverberant ratio criterion</span>
+
+<span class="comment">% Example:</span>
+<span class="comment">%   &gt;&gt; ics_reverb('rev800_2.wav','clean_2.wav','outrev.wav',-8)</span>
+
+ics_reverb(<span class="string">'rev800_2.wav'</span>,<span class="string">'clean_2.wav'</span>,<span class="string">'outrev.wav'</span>,-8)
+
+<span class="comment">% File was corrupted with RT60=0.8 sec reverberation.</span>
+<span class="comment">% The signal-to-reverberant ratio (SRR) threshold was set to -8 dB.</span>
+
+<span class="comment">% Reference</span>
+<span class="comment">% Kokkinakis, K., Hazrati, O. and Loizou, P. (2011). "A channel-selection criterion for suppressing reverberation</span>
+<span class="comment">% in cochlear implants," Journal of the Acoustical Society of America, 129(5), 3221-3232.</span>
+</pre><h2>MASKER BASED RULE<a name="6"></a></h2>
+			<p class="PreformattedText">&nbsp;<font face="Courier New" size="2" color="#008000">% 
+			Usage: ics_masker_rule(filename, clfile, outfile)</font></p>
+			<p class="PreformattedText">
+			<font face="Courier New" size="2" color="#008000">&nbsp;</font></p>
+			<p class="PreformattedText">
+			<font face="Courier New" size="2" color="#008000">% filename - noisy 
+			speech filename (mixture)</font></p>
+			<p class="PreformattedText">
+			<font face="Courier New" size="2" color="#008000">% clfile - clean 
+			speech filename</font></p>
+			<p class="PreformattedText">
+			<font face="Courier New" size="2" color="#008000">% outilfe - name 
+			of output file</font></p>
+			<p class="PreformattedText">
+			<font face="Courier New" size="2" color="#008000">Example:</font></p>
+			<p class="PreformattedText">
+			<font face="Courier New" size="2" color="#008000">ics_masker_rule(&#39;S_01_01-noisy.wav&#39;,&#39;S_01_01.wav&#39;,&#39;out_masker_rule.wav&#39;)</font></p>
+			<pre class="codeinput">
+
+<span class="comment">%Reference:</span>
+<span class="comment">%Kim, G. and Loizou, P. (2010). "A new binary mask based on noise constraints for improved speech intelligibility,"</span>
+<span class="comment">% Proc. INTERSPEECH, Makuhari, Japan, pp. 1632-1635.</span>
+</pre><h2>REFERENCES<a name="7"></a></h2><pre class="codeinput"><span class="comment">% Publications (from our lab) assuming ideal conditions:</span>
+<span class="comment">% =============================================================================</span>
+<span class="comment">%</span>
+<span class="comment">% Hu, Y. and Loizou, P. (2008).</span>
+<span class="comment">% "A new sound coding strategy for suppressing noise in cochlear implants,"</span>
+<span class="comment">% Journal of Acoustical Society of America, 124(1), 498-509.</span>
+<span class="comment">%</span>
+<span class="comment">% Kim, G. and Loizou, P. (2010).</span>
+<span class="comment">% "A new binary mask based on noise constraints</span>
+<span class="comment">% for improved speech intelligibility,"</span>
+<span class="comment">% Proc. INTERSPEECH, Makuhari, Japan, pp. 1632-1635.</span>
+<span class="comment">%</span>
+<span class="comment">%Kim, G. and Loizou, P. (2011). &#8220;Gain-induced speech distortions and the absence of intelligibility</span>
+<span class="comment">%  benefit with existing noise-reduction algorithms,&#8221; J. Acoust. Soc. Am. 130(3), (in press)</span>
+<span class="comment">%</span>
+<span class="comment">% Kokkinakis, K., Hazrati, O. and Loizou, P. (2011).</span>
+<span class="comment">% "A channel-selection criterion for suppressing reverberation</span>
+<span class="comment">% in cochlear implants,"</span>
+<span class="comment">% Journal of the Acoustical Society of America, 129(5), 3221-3232.</span>
+<span class="comment">%</span>
+<span class="comment">% Li, N. and Loizou, P. (2008).</span>
+<span class="comment">% "Factors influencing intelligibility of ideal binary-masked speech:</span>
+<span class="comment">%  Implications for noise reduction,"</span>
+<span class="comment">% Journal of Acoustical Society of America, 123(3), 1673:1682</span>
+<span class="comment">%</span>
+<span class="comment">% Li, N. and Loizou, P. (2008).</span>
+<span class="comment">% "Effect of spectral resolution on the intelligibility</span>
+<span class="comment">% of ideal binary masked speech,"</span>
+<span class="comment">% Journal of Acoustical Society of America, 123(4), EL59- EL64</span>
+<span class="comment">%</span>
+<span class="comment">% Loizou, P.  and Kim, G. (2011).</span>
+<span class="comment">% "Reasons why Current Speech-Enhancement Algorithms</span>
+<span class="comment">% do not Improve Speech Intelligibility and Suggested Solutions,"</span>
+<span class="comment">% IEEE Trans. Audio, Speech, Language Processing, 19(1), 47-56.</span>
+
+
+<span class="comment">% Publications (from our lab) assuming realistic conditions:</span>
+<span class="comment">% =============================================================================</span>
+<span class="comment">%</span>
+<span class="comment">% Hu, Y. and Loizou, P. (2008).</span>
+<span class="comment">% "Techniques for estimating the ideal binary mask,"</span>
+<span class="comment">% Proc. of 11th International Workshop on Acoustic Echo and Noise Control,</span>
+<span class="comment">% September 14th-17th, Seattle, Washington.</span>
+<span class="comment">%</span>
+<span class="comment">% Hu, Y. and Loizou, P. (2010).</span>
+<span class="comment">% "Environment-specific noise suppression for improved speech</span>
+<span class="comment">% intelligibility by cochlear implant users,"</span>
+<span class="comment">% Journal of the Acoustical Society of America, 127(6), 3689-3695.</span>
+<span class="comment">%</span>
+<span class="comment">% Kim, G., Lu, Y., Hu, Y. and Loizou, P. (2009).</span>
+<span class="comment">% "An algorithm that improves speech intelligibility in noise for</span>
+<span class="comment">% normal-hearing listeners,"</span>
+<span class="comment">% Journal of the Acoustical Society of America, 126(3), 1486-1494</span>
+<span class="comment">%</span>
+<span class="comment">% Kim, G. and Loizou, P. (2010).</span>
+<span class="comment">% "Improving Speech Intelligibility in Noise</span>
+<span class="comment">% Using Environment-Optimized Algorithms,"</span>
+<span class="comment">% IEEE Trans. Audio, Speech, Language Processing, 18(8), 2080-2090.</span>
+<span class="comment">%</span>
+<span class="comment">% Kim, G. and Loizou, P. (2010).</span>
+<span class="comment">% "Improving Speech Intelligibility in Noise Using a Binary Mask</span>
+<span class="comment">% that is Based on Magnitude Spectrum Constraints,"</span>
+<span class="comment">% IEEE Signal Processing Letters, 17(2), 1010-1013</span>
+<span class="comment">%</span>
+<span class="comment">% Kim, G. and Loizou, P. (2009).</span>
+<span class="comment">% "A data-driven approach for estimating the time-frequency binary mask,"</span>
+<span class="comment">% Proc. Interspeech, Brighton, UK, Sept 6-9, 2009</span>
+</pre><p class="footer"><br>
+            Published with MATLAB&reg; 7.6<br></p>
+      </div>
+      <!--
+##### SOURCE BEGIN #####
+% Present folder contains implementations of ideal channel selection (ICS) 
+% algorithms based on different selection criteria (as presented at CIAP'11 
+% conference). For the SNR selection criterion, ICS is also known in the 
+% literature as ideal binary mask (see review in book by Wang and Brown, 
+% 2006). References for the other selection criteria are provided at the  
+% end of this file, and are available from our website:
+%
+% Direct any inquiries about the code to: Philip Loizou (loizou@utdallas.edu)
+% =============================================================================
+
+
+
+%% ICS DEMO
+
+% Usage: ics(noisefile, clfile, outfile, nsnr, thrd)
+%
+% noisefile - name of masker file
+% clfile - name of clean stimulus file
+% outfile - name of output file
+% nsnr is the overall input SNR (in dB) for noisy file
+% thrd is the SNR threshold  (in dB)
+
+
+% Example:
+% In MATLAB, type:
+%   >> ics('babble1.wav','S_01_01.wav','out.wav',-10,-5)
+
+ics('babble1.wav','S_01_01.wav','out.wav',-10,-5)
+
+% For the above example, input SNR=-10 dB and SNR threshold=-5 dB.
+% The noisy (mixture) file is contained in 'S_01_01-noisy.wav' file.
+% Segregated file is in 'out.wav'
+
+% The wav files can be played via a Media Player, Cool Edit, Audition, etc.
+% It can also be viewed and played through our toolbox 'Colea':
+% http://www.utdallas.edu/~loizou/speech/software.htm
+
+% Reference:
+% Li, N. and Loizou, P. (2008). "Factors influencing intelligibility of ideal binary-masked speech: Implications 
+% for noise reduction," Journal of Acoustical Society of America, 123(3), 1673-1682
+
+
+
+%% COMPETING-TALKER DEMO
+
+% Usage: ics_competing_talker(filename, clfile, t_outfile, m_outfile,thrd) 
+%
+% filename - mixture filename
+% clfile - clean target filename
+% t_outfile - output file: Target talker
+% m_outfile - output file: Competing talker
+% thrd - SNR threshold in dB
+
+% Example:
+%   >> ics_competing_talker('talker_mixture.wav', 'S_01_10.wav','target.wav','masker.wav',-5)
+
+ics_competing_talker('talker_mixture.wav','S_01_10.wav','target.wav','masker.wav',-5)
+
+% In 'talker_mixture.wav' mixture file, the competing talker was added 
+% at SNR=-5 dB (target and competing talkers were same for this example).
+% Files 'target.wav' and 'masker.wav' contain processed sentences 
+% of the segregated target and competing-talker talkers respectively.
+% SNR threshold=-5 dB.
+
+
+
+%% CONSTRAINT RULE
+
+% Usage: ics_constr_rule(filename, clfile, outfile, GAIN)
+%
+% filename - noisy speech filename (mixture)
+% clfile - clean speech filename
+% outilfe - name of output file
+% GAIN='Wiener'; 'MMSE', 'logMMSE', 'MMSE-SPU'; 'pMMSE'; 'SpecSub'
+%
+% Example:
+%   >> ics_constr_rule('S_01_02-babble_m10dB.wav', 'S_01_02.wav','out_constr.wav','Wiener')
+
+ics_constr_rule('S_01_02-babble_m10dB.wav', 'S_01_02.wav','out_constr.wav','Wiener')
+
+% Target was corrupted with babble at -10 dB SNR. 
+% The Wiener gain function was used.
+% Other possible gain functions: 'MMSE', 'logMMSE', 'MMSE-SPU', 'pMMSE', 'SpecSub'
+
+% Example with competing-talker:
+%   >> ics_constr_rule('talker_mixture.wav','S_01_10.wav','out.wav','Wiener')
+
+ics_constr_rule('talker_mixture.wav','S_01_10.wav','out.wav','Wiener')
+
+% Another example in babble at input SNR=-5 dB
+%   >> ics_constr_rule('S_02_02-babble_m5dB.wav', 'S_02_02.wav','out_constr.wav','Wiener')
+
+ics_constr_rule('S_02_02-babble_m5dB.wav', 'S_02_02.wav','out_constr.wav','Wiener')
+
+%References
+%Kim, G. and Loizou, P. (2011). “Gain-induced speech distortions and the absence of intelligibility
+%  benefit with existing noise-reduction algorithms,” J. Acoust. Soc. Am. 130(3), (in press)
+%Loizou, P.  and Kim, G. (2011). "Reasons why Current Speech-Enhancement Algorithms do not Improve Speech 
+% Intelligibility and Suggested Solutions," IEEE Trans. Audio, Speech, Language Processing, 19(1), 47-56.
+
+
+%% REVERBERATION RULE
+
+% Usage:  ics_reverb(reverbfile, clfile, outfile, thrd)
+%
+% reverbfile - name of  file containing reverberated stimulus
+% clfile - name of clean sentence file
+% outfile - name of output (processed) file
+% thrd is the threshold (in dB) for signal-to-reverberant ratio criterion 
+
+% Example:
+%   >> ics_reverb('rev800_2.wav','clean_2.wav','outrev.wav',-8)
+
+ics_reverb('rev800_2.wav','clean_2.wav','outrev.wav',-8)
+
+% File was corrupted with RT60=0.8 sec reverberation.
+% The signal-to-reverberant ratio (SRR) threshold was set to -8 dB.
+
+% Reference
+% Kokkinakis, K., Hazrati, O. and Loizou, P. (2011). "A channel-selection criterion for suppressing reverberation 
+% in cochlear implants," Journal of the Acoustical Society of America, 129(5), 3221-3232.
+
+%% MASKER BASED RULE
+
+% Code for the masker-based rule will be posted shortly 
+% (after CIAP'11 conference)
+
+%Reference:
+%Kim, G. and Loizou, P. (2010). "A new binary mask based on noise constraints for improved speech intelligibility," 
+% Proc. INTERSPEECH, Makuhari, Japan, pp. 1632-1635.
+
+
+
+%% REFERENCES
+
+% Publications (from our lab) assuming ideal conditions:
+% =============================================================================
+%
+% Hu, Y. and Loizou, P. (2008). 
+% "A new sound coding strategy for suppressing noise in cochlear implants," 
+% Journal of Acoustical Society of America, 124(1), 498-509.
+% 
+% Kim, G. and Loizou, P. (2010). 
+% "A new binary mask based on noise constraints 
+% for improved speech intelligibility," 
+% Proc. INTERSPEECH, Makuhari, Japan, pp. 1632-1635.
+% 
+%Kim, G. and Loizou, P. (2011). “Gain-induced speech distortions and the absence of intelligibility
+%  benefit with existing noise-reduction algorithms,” J. Acoust. Soc. Am. 130(3), (in press)
+%
+% Kokkinakis, K., Hazrati, O. and Loizou, P. (2011). 
+% "A channel-selection criterion for suppressing reverberation 
+% in cochlear implants," 
+% Journal of the Acoustical Society of America, 129(5), 3221-3232.
+% 
+% Li, N. and Loizou, P. (2008). 
+% "Factors influencing intelligibility of ideal binary-masked speech: 
+%  Implications for noise reduction," 
+% Journal of Acoustical Society of America, 123(3), 1673:1682
+% 
+% Li, N. and Loizou, P. (2008). 
+% "Effect of spectral resolution on the intelligibility 
+% of ideal binary masked speech," 
+% Journal of Acoustical Society of America, 123(4), EL59- EL64
+% 
+% Loizou, P.  and Kim, G. (2011). 
+% "Reasons why Current Speech-Enhancement Algorithms  
+% do not Improve Speech Intelligibility and Suggested Solutions," 
+% IEEE Trans. Audio, Speech, Language Processing, 19(1), 47-56.
+ 
+ 
+% Publications (from our lab) assuming realistic conditions:
+% =============================================================================
+% 
+% Hu, Y. and Loizou, P. (2008). 
+% "Techniques for estimating the ideal binary mask," 
+% Proc. of 11th International Workshop on Acoustic Echo and Noise Control, 
+% September 14th-17th, Seattle, Washington.
+% 
+% Hu, Y. and Loizou, P. (2010). 
+% "Environment-specific noise suppression for improved speech 
+% intelligibility by cochlear implant users," 
+% Journal of the Acoustical Society of America, 127(6), 3689-3695.
+% 
+% Kim, G., Lu, Y., Hu, Y. and Loizou, P. (2009). 
+% "An algorithm that improves speech intelligibility in noise for 
+% normal-hearing listeners," 
+% Journal of the Acoustical Society of America, 126(3), 1486-1494
+% 
+% Kim, G. and Loizou, P. (2010). 
+% "Improving Speech Intelligibility in Noise 
+% Using Environment-Optimized Algorithms," 
+% IEEE Trans. Audio, Speech, Language Processing, 18(8), 2080-2090.
+% 
+% Kim, G. and Loizou, P. (2010). 
+% "Improving Speech Intelligibility in Noise Using a Binary Mask 
+% that is Based on Magnitude Spectrum Constraints," 
+% IEEE Signal Processing Letters, 17(2), 1010-1013 
+% 
+% Kim, G. and Loizou, P. (2009). 
+% "A data-driven approach for estimating the time-frequency binary mask," 
+% Proc. Interspeech, Brighton, UK, Sept 6-9, 2009
+
+ 
+
+##### SOURCE END #####
+-->
+   </body>
+</html>
